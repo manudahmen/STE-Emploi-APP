@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+    <display-name>Emploi du temps App</display-name>
+    <description>Agenda collectif</description>
+
+    <listener>
+        <listener-class>org.directwebremoting.servlet.DwrListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>steemploi.persistance.CloseConnection</listener-class>
+    </listener>
+    <listener>
+        <listener-class>steemploi.security.ContextParam</listener-class>
+    </listener>
+    <filter>
+        <filter-name>JSPAccess</filter-name>
+        <filter-class>steemploi.security.JSPAccess</filter-class>
+    </filter>
+    <filter>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-class>steemploi.security.Character</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>JSPAccess</filter-name>
+        <servlet-name>dispatcher</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>JSPAccess</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>JSPAccess</filter-name>
+        <servlet-name>action</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>JSPAccess</filter-name>
+        <url-pattern>*.servlet</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <servlet-name>dispatcher</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <servlet-name>action</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>*.servlet</url-pattern>
+    </filter-mapping>
+
+
+
+    <servlet>
+        <servlet-name>dwr-invoker</servlet-name>
+        <servlet-class>org.directwebremoting.servlet.DwrServlet</servlet-class>
+
+        <!-- This should NEVER be present in live -->
+        <init-param>
+            <param-name>debug</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <!-- Remove this unless you want to use active reverse ajax -->
+        <init-param>
+            <param-name>activeReverseAjaxEnabled</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <!--
+                By default DWR creates application scope objects when they are first
+                used. This creates them when the app-server is started
+        -->
+        <init-param>
+            <param-name>initApplicationScopeCreatorsAtStartup</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <!--
+                WARNING: allowing JSON-RPC connections bypasses much of the security
+                protection that DWR gives you. Take this out if security is important
+        -->
+        <init-param>
+            <param-name>jsonRpcEnabled</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <!--
+                WARNING: allowing JSONP connections bypasses much of the security
+                protection that DWR gives you. Take this out if security is important
+        -->
+        <init-param>
+            <param-name>jsonpEnabled</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <!--
+                data: URLs are good for small images, but are slower, and could OOM
+                for larger images. Leave this out (or keep 'false') for anything but
+                small images
+        -->
+        <init-param>
+            <param-name>preferDataUrlSchema</param-name>
+            <param-value>false</param-value>
+        </init-param>
+
+        <!--
+                This enables full streaming mode. It's probably better to leave this
+                out if you are running across the Internet
+        -->
+        <init-param>
+            <param-name>maxWaitAfterWrite</param-name>
+            <param-value>-1</param-value>
+        </init-param>
+
+        <load-on-startup>1</load-on-startup>
+
+    </servlet>
+
+    <servlet>
+        <servlet-name>context</servlet-name>
+        <servlet-class>org.springframework.web.context.ContextLoaderServlet</servlet-class>
+    </servlet>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/applicationContext.xml</param-value>
+    </context-param>
+    <context-param>
+        <param-name>com.sun.faces.verifyObjects</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>com.sun.faces.validateXml</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+        <param-value>client</param-value>
+    </context-param>
+        
+    <context-param>
+        <description>Data Source</description>
+        <param-name>jdbc/steemploi</param-name>
+        <param-value>java:comp/env/jdbc/steemploi</param-value>
+    </context-param>
+    <context-param>
+        <description>Data Source</description>
+        <param-name>jdbc/steemploi</param-name>
+        <param-value>java:comp/env/jdbc/steemploi</param-value>
+    </context-param>
+        
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <servlet>
+        <servlet-name>dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>action</servlet-name>
+        <servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
+        <init-param>
+            <param-name>config</param-name>
+            <param-value>/WEB-INF/struts-config.xml</param-value>
+        </init-param>
+        <init-param>
+            <param-name>debug</param-name>
+            <param-value>2</param-value>
+        </init-param>
+        <init-param>
+            <param-name>detail</param-name>
+            <param-value>2</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>deleteEvt</servlet-name>
+        <servlet-class>com.myapp.struts.events.DeleteEvt</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>deleteUtilisateur</servlet-name>
+        <servlet-class>com.myapp.struts.admin.DeleteUtilisateur</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>deleteSessionFormation</servlet-name>
+        <servlet-class>com.myapp.struts.admin.DeleteSessionFormation</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>deleteFormation</servlet-name>
+        <servlet-class>com.myapp.struts.admin.DeleteFormation</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>action</servlet-name>
+        <url-pattern>*.do</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>deleteEvt</servlet-name>
+        <url-pattern>/DeleteEvt</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <description>
+        </description>
+        <display-name>DeleteUtilisateur</display-name>
+        <servlet-name>DeleteUtilisateur</servlet-name>
+        <servlet-class>com.myapp.struts.admin.DeleteUtilisateur</servlet-class>
+    </servlet>
+    <servlet>
+        <description>
+        </description>
+        <display-name>DeleteSessionFormation</display-name>
+        <servlet-name>DeleteSessionFormation</servlet-name>
+        <servlet-class>com.myapp.struts.admin.DeleteSessionFormation</servlet-class>
+    </servlet>
+    <servlet>
+        <description>
+        </description>
+        <display-name>DeleteFormation</display-name>
+        <servlet-name>DeleteFormation</servlet-name>
+        <servlet-class>com.myapp.struts.admin.DeleteFormation</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DownloadCV</servlet-name>
+        <servlet-class>com.myapp.struts.DownloadCV</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DownloadCV</servlet-name>
+        <url-pattern>/DownloadCV</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Logiciels</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.Logiciels</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Logiciels</servlet-name>
+        <url-pattern>/Logiciels.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>Logiciel</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.Logiciel</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Logiciel</servlet-name>
+        <url-pattern>/Logiciel.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>saveLogiciel</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.SaveLogiciel</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>saveLogiciel</servlet-name>
+        <url-pattern>/saveLogiciel.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>loadCategorie</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.LoadCategorie</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>loadCategorie</servlet-name>
+        <url-pattern>/LoadCategorie.servlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>deleteCategorie</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.DeleteCategorie</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>deleteCategorie</servlet-name>
+        <url-pattern>/DeleteCategorie.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>deleteLogiciel</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.DeleteLogiciel</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>deleteLogiciel</servlet-name>
+        <url-pattern>/DeleteLogiciel.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>loadLangue</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.LoadLangue</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>loadLangue</servlet-name>
+        <url-pattern>/LoadLangue.servlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>deleteLangue</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.DeleteLangue</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>deleteLangue</servlet-name>
+        <url-pattern>/DeleteLangue.servlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>saveLangue</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.SaveLangue</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>saveLangue</servlet-name>
+        <url-pattern>/SaveLangue.servlet</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>deleteLangage</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.DeleteLangage</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>deleteLangage</servlet-name>
+        <url-pattern>/DeleteLangage.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>saveLangage</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.SaveLangage</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>saveLangage</servlet-name>
+        <url-pattern>/SaveLangage.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>loadLangage</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.LoadLangage</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>loadLangage</servlet-name>
+        <url-pattern>/LoadLangage.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>loadListeLogiciels</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.LoadListeLogiciels</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>loadListeLogiciels</servlet-name>
+        <url-pattern>/LoadListeLogiciels.servlet</url-pattern>
+    </servlet-mapping>
+	
+	
+    <servlet>
+        <servlet-name>saveOrdreLangues</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.SaveOrdreLangues</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>saveOrdreLangues</servlet-name>
+        <url-pattern>/SaveOrdreLangues.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>saveOrdreLangages</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.SaveOrdreLangages</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>saveOrdreLangages</servlet-name>
+        <url-pattern>/SaveOrdreLangages.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>saveOrdreLogiciels</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.SaveOrdreLogiciels</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>saveOrdreLogiciels</servlet-name>
+        <url-pattern>/SaveOrdreLogiciels.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>saveOrdreLogiciels2</servlet-name>
+        <servlet-class>com.myapp.struts.editerprofils.SaveOrdreLogiciels2</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>saveOrdreLogiciels2</servlet-name>
+        <url-pattern>/SaveOrdreLogiciels2.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>entrepriseComments</servlet-name>
+        <servlet-class>com.myapp.struts.EntrepriseComments</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>entrepriseComments</servlet-name>
+        <url-pattern>/EntrepriseComments.servlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>chercherProfils</servlet-name>
+        <servlet-class>com.myapp.struts.chercherProfils.ChercherProfils</servlet-class>
+    </servlet>
+    <servlet>
+        <description>
+        </description>
+        <display-name>
+            EtudiantTaches</display-name>
+        <servlet-name>EtudiantTaches</servlet-name>
+        <servlet-class>
+            steemploi.statistiques.EtudiantTaches</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>chercherProfils</servlet-name>
+        <url-pattern>/ChercherProfils.servlet</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet-mapping>
+        <servlet-name>dwr-invoker</servlet-name>
+        <url-pattern>/dwr/dwr/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteUtilisateur</servlet-name>
+        <url-pattern>/admin/DeleteUtilisateur</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteSessionFormation</servlet-name>
+        <url-pattern>/admin/DeleteSessionFormation</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteFormation</servlet-name>
+        <url-pattern>/admin/DeleteFormation</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EtudiantTaches</servlet-name>
+        <url-pattern>/EtudiantTaches.servlet</url-pattern>
+    </servlet-mapping>
+
+    <resource-ref>
+        <description>
+            reference a la ressource BDD pour le pool
+        </description>
+        <res-ref-name>java:comp/env/jdbc/steemploi</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
+    <welcome-file-list>
+        <welcome-file>login.jsp</welcome-file>
+    </welcome-file-list>
+
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+        </jsp-property-group>
+    </jsp-config>
+</web-app>

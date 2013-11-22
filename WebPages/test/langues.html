@@ -1,0 +1,292 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@page import="com.myapp.struts.Getter, com.myapp.struts.events.Conge, steemploi.persistance.TableConge, steemploi.service.*" %>
+
+<%@page import="steemploi.service.Profil.CategoriesLogiciels"%><jsp:useBean id="user" class="steemploi.service.Utilisateur" scope="session" />
+<%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %>
+<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %>
+<%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic" %>
+<jsp:useBean id="g" class="com.myapp.struts.Getter" scope="request"></jsp:useBean>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+	<title>Liste</title>
+	<style type="text/css">
+	body{
+		font-family: Trebuchet MS, Lucida Sans Unicode, Arial, sans-serif;
+		margin:0px;
+		padding:0px;
+		background-image:url('http://www.dhtmlgoodies.com/images/heading3.gif');
+		background-repeat:no-repeat;
+		padding-top:85px;					
+		overflow:hidden;
+		padding-left:10px;
+		-moz-user-select:no;
+	}
+	
+	/* Don't change these options */
+	#movableNode {
+		position:absolute;
+	}
+	
+	#arrDestInditcator{
+		position:absolute;
+		display:none;
+		width:100px;
+	}
+	/* End options that shouldn't be changed */
+
+	
+	#arrangableNodes,#movableNode ul{
+		padding-left:0px;
+		margin-left:0px;
+		margin-top:0px;
+		padding-top:0px;
+		background-color: #00F;
+		width: 30%;
+	}
+	#arrangableNodes li,#movableNode li {
+		list-style-type:none;
+		cursor:default;
+		background-color: #99F;
+	}
+
+	</style>
+	
+	<script type="text/javascript">
+	/************************************************************************************************************
+	(C) www.dhtmlgoodies.com, October 2005
+	
+	This is a script from www.dhtmlgoodies.com. You will find this and a lot of other scripts at our website.	
+	
+	Terms of use:
+	You are free to use this script as long as the copyright message is kept intact. However, you may not
+	redistribute, sell or repost it without our permission.
+	
+	Thank you!
+	
+	www.dhtmlgoodies.com
+	Alf Magne Kalleland
+	
+	************************************************************************************************************/	
+	
+	var offsetYInsertDiv = -3; // Y offset for the little arrow indicating where the node should be inserted.
+	if(!document.all)offsetYInsertDiv = offsetYInsertDiv - 7; 	// No IE
+
+	
+	var arrParent = false;
+	var arrMoveCont = false;
+	var arrMoveCounter = -1;
+	var arrTarget = false;
+	var arrNextSibling = false;
+	var leftPosArrangableNodes = false;
+	var widthArrangableNodes = false;
+	var nodePositionsY = new Array();
+	var nodeHeights = new Array();
+	var arrInsertDiv = false;
+	var insertAsFirstNode = false;
+	var arrNodesDestination = false;
+	
+	
+	function openNode(id)
+	{
+		alert("Noeud: "+id);
+	}
+	
+	function cancelEvent()
+	{
+		return false;
+	}
+	function getTopPos(inputObj)
+	{
+		
+	  var returnValue = inputObj.offsetTop;
+	  while((inputObj = inputObj.offsetParent) != null){
+	  	returnValue += inputObj.offsetTop;
+	  }
+	  return returnValue;
+	}
+	
+	function getLeftPos(inputObj)
+	{
+	  var returnValue = inputObj.offsetLeft;
+	  while((inputObj = inputObj.offsetParent) != null)returnValue += inputObj.offsetLeft;
+	  return returnValue;
+	}
+		
+	function clearMovableDiv()
+	{
+		if(arrMoveCont.getElementsByTagName('LI').length>0){
+			if(arrNextSibling)arrParent.insertBefore(arrTarget,arrNextSibling); else arrParent.appendChild(arrTarget);			
+		}
+		
+	}
+	
+	function initMoveNode(e)
+	{
+		clearMovableDiv();
+		if(document.all)e = event;
+		arrMoveCounter = 0;
+		arrTarget = this;
+		if(this.nextSibling)arrNextSibling = this.nextSibling; else arrNextSibling = false;
+		timerMoveNode();
+		arrMoveCont.parentNode.style.left = e.clientX + 'px';
+		arrMoveCont.parentNode.style.top = e.clientY + 'px';
+		return false;
+		
+	}
+	function timerMoveNode()
+	{
+		if(arrMoveCounter>=0 && arrMoveCounter<10){
+			arrMoveCounter = arrMoveCounter +1;
+			setTimeout('timerMoveNode()',20);
+		}
+		if(arrMoveCounter>=10){
+			arrMoveCont.appendChild(arrTarget);
+		}
+	}
+		
+	function arrangeNodeMove(e)
+	{
+		if(document.all)e = event;
+		if(arrMoveCounter<10)return;
+		if(document.all && arrMoveCounter>=10 && e.button!=1 && navigator.userAgent.indexOf('Opera')==-1){
+			arrangeNodeStopMove();
+		}
+		
+		arrMoveCont.parentNode.style.left = e.clientX + 'px';
+		arrMoveCont.parentNode.style.top = e.clientY + 'px';	
+		
+		var tmpY = e.clientY;
+		arrInsertDiv.style.display='none';
+		arrNodesDestination = false;
+		
+
+		if(e.clientX<leftPosArrangableNodes || e.clientX>leftPosArrangableNodes + widthArrangableNodes)return; 
+			
+		var subs = arrParent.getElementsByTagName('LI');
+		for(var no=0;no<subs.length;no++){
+			var topPos =getTopPos(subs[no]);
+			var tmpHeight = subs[no].offsetHeight;
+			
+			if(no==0){
+				if(tmpY<=topPos && tmpY>=topPos-5){
+					arrInsertDiv.style.top = (topPos + offsetYInsertDiv) + 'px';
+					arrInsertDiv.style.display = 'block';				
+					arrNodesDestination = subs[no];	
+					insertAsFirstNode = true;
+					return;
+				}				
+			}
+			
+			if(tmpY>=topPos && tmpY<=(topPos+tmpHeight)){
+				arrInsertDiv.style.top = (topPos+tmpHeight + offsetYInsertDiv) + 'px';
+				arrInsertDiv.style.display = 'block';				
+				arrNodesDestination = subs[no];
+				insertAsFirstNode = false;
+				return;
+			}				
+		}
+	}
+	
+	function arrangeNodeStopMove()
+	{
+		arrMoveCounter = -1; 
+		arrInsertDiv.style.display='none';
+		
+		if(arrNodesDestination){
+			var subs = arrParent.getElementsByTagName('LI');
+			if(arrNodesDestination==subs[0] && insertAsFirstNode){
+				arrParent.insertBefore(arrTarget,arrNodesDestination);		
+			}else{
+				if(arrNodesDestination.nextSibling){
+					arrParent.insertBefore(arrTarget,arrNodesDestination.nextSibling);
+				}else{
+					arrParent.appendChild(arrTarget);
+				}
+			}
+		}		
+		arrNodesDestination = false;
+		clearMovableDiv();
+	}		
+	
+	function saveArrangableNodes()
+	{
+		var nodes = arrParent.getElementsByTagName('LI');
+		var string = "";
+		for(var no=0;no<nodes.length;no++){
+			if(string.length>0)string = string + ',';
+			string = string + nodes[no].id;		
+		}
+		
+		document.forms[0].hiddenNodeIds.value = string;
+		
+		// Just for testing
+		document.getElementById('arrDebug').innerHTML = 'Ready to save these nodes:<br>' + string.replace(/,/g,',<BR>');	
+		
+		// document.forms[0].submit(); // Remove the comment in front of this line when you have set an action to the form.
+		
+	}
+	
+	function initArrangableNodes()
+	{
+		arrParent = document.getElementById('arrangableNodes');
+		arrMoveCont = document.getElementById('movableNode').getElementsByTagName('UL')[0];
+		arrInsertDiv = document.getElementById('arrDestInditcator');
+		
+		leftPosArrangableNodes = getLeftPos(arrParent);
+		arrInsertDiv.style.left = leftPosArrangableNodes - 5 + 'px';
+		widthArrangableNodes = arrParent.offsetWidth;
+		
+		var subs = arrParent.getElementsByTagName('LI');
+		for(var no=0;no<subs.length;no++){
+			subs[no].onmousedown = initMoveNode;
+			subs[no].onselectstart = cancelEvent;
+			subs[no].innerHTML += '<a style="text-decoration: underline; color: green; float: right;" onclick=\'openNode("'+subs[no].id+'")\'>Accéder à la catégorie</a>';
+		}
+	
+		document.documentElement.onmouseup = arrangeNodeStopMove;
+		document.documentElement.onmousemove = arrangeNodeMove;
+		document.documentElement.onselectstart = cancelEvent;
+		
+	}	
+	
+	window.onload = initArrangableNodes;
+	
+	</script>
+
+</head><body>
+<h1>Arrange the nodes below</h1>
+<!--<ul id="arrangableNodes2" style="float: right; margin-left: 10%;width: 30%; margin-right: 30%;">
+	<li id="node2_1">E</li>
+	<li id="node2_2">R</li>
+	<li id="node2_3">T</li>
+</ul>
+-->
+<ul id="arrangableNodes">
+	
+	<li id="node1">Node no. 1<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node1")'>Accéder à la catégorie</a></li><li id="node2">Node no. 2<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node2")'>Accéder à la catégorie</a></li>
+	<li id="node3">Node no. 3<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node3")'>Accéder à la catégorie</a></li>
+	<li id="node4">Node no. 4<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node4")'>Accéder à la catégorie</a></li>
+	<li id="node5">Node no. 5<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node5")'>Accéder à la catégorie</a></li>
+	<li id="node6">Node no. 6<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node6")'>Accéder à la catégorie</a></li>
+	<li id="node7">Node no. 7<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node7")'>Accéder à la catégorie</a></li>
+	<li id="node8">Node no. 8<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node8")'>Accéder à la catégorie</a></li>	
+	<li id="node9">Node no. 9<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node9")'>Accéder à la catégorie</a></li>	
+	<li id="node10">Node no. 10<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node10")'>Accéder à la catégorie</a></li><li id="node11">Node no. 11<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node11")'>Accéder à la catégorie</a></li>	
+		
+	<li id="node12">Node no. 12<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node12")'>Accéder à la catégorie</a></li>	
+	<li id="node13">Node no. 13<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node13")'>Accéder à la catégorie</a></li>	
+	<li id="node14">Node no. 14<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node14")'>Accéder à la catégorie</a></li>	
+	<li id="node15">Node no. 15<a style="text-decoration: underline; color: green; float: right;" onclick='openNode("node15")'>Accéder à la catégorie</a></li>	
+</ul>
+<p>
+	<a href="#" onclick="saveArrangableNodes();return false">Save</a>
+</p>
+<div style="left: 109px; top: 141px;" id="movableNode"><ul></ul></div>	
+<div style="left: 5px; display: none; top: 136px;" id="arrDestInditcator"><img src="langues_fichiers/insert.gif"></div>
+<div id="arrDebug"></div>
+<form method="post" action="????">
+	<input name="hiddenNodeIds" type="hidden">
+</form>
+</body></html>

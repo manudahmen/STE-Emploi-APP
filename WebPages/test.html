@@ -1,0 +1,52 @@
+<html>
+<head>
+<title>Test</title>
+</head>
+<body>
+<script type="text/javascript" >
+	var index = 0;
+	var length = 3;
+	var evts = new Array();
+	evts[0] = new Array();
+	evts[0][0] = 'Entreprise 1';
+	evts[0][1] = 'pentreprise';
+	evts[0][2] = 3;
+	evts[1] = new Array();
+	evts[1][0] = 'Entreprise 2';
+	evts[1][1] = 'pentreprise';
+	evts[1][2] = 12;
+	evts[2] = new Array();
+	evts[2][0] = 'Entreprise 3';
+	evts[2][1] = 'pentreprise';
+	evts[2][2] = 1;
+
+	function prev()
+	{
+		if(index>0) index--;
+		var evt = document.getElementById('showEvt');
+		evt.innerHTML =inner(); 
+	}
+	function next()
+	{
+		if(index<length-1) index++;
+		var evt = document.getElementById('showEvt');
+		evt.innerHTML =inner(); 
+	}
+	function show()
+	{
+		var evt = document.getElementById('showEvt');
+		evt.innerHTML =inner(); 
+	}
+	function inner()
+	{
+		return '<span><a href="#" onclick="javascript:prev()">&lt;</a>'+(evts[index][0])+' ('+(index+1)+'/'+length+') <a href="#" onclick="javascript:next()">&gt;</a></span>'; 
+	}
+</script>
+
+<span id="showEvt">
+</span> 
+<script type="text/javascript" >
+	show();
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+Formateurs
+----------
+- agenda par formation ou echeances etudiants
+- echeances pour formations et etudiants
+- si plusieurs echeances -> cadre à l' avant-plan avec liste des echeances
+
+Etudiants
+---------
+- agenda avec echeances le concernant (logo par catégorie) et ses taches
+
+Statistiques
+------------
+- a partir des taches que les stagiaires ont fait on peut voir s'ils sont actifs ou non dans leur recherche d'emploi
+
+Entreprises et contacts
+-----------------------
+- ajouter contacts liés aux entreprises
+
+Taches
+------
+Présentation technique de l'application
+Télécharger spec. UML
+Comparatif .NET/Java
+Présentation Java
+
+Présentation iCal
+
+
+Echeances
+---------
+Formations + stagiaires => "attendee"

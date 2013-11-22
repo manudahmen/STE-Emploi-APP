@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+<title>Better date input demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link type="text/css" href="calpopup.css" rel="stylesheet" media="screen">
+<script type="text/javascript" src="js/events.js"></script>
+<script type="text/javascript" src="js/calpopup.js"></script>
+<script type="text/javascript" src="js/dateparse.js"></script>
+<script type="text/javascript" src="js/date-parser.js"></script>
+
+<style type="text/css">
+body {
+	margin: 2em;
+	font-family: georgia,serif;
+}
+
+div#dateFieldMsg {
+	font-size: 0.75em;
+}
+div#dateFieldMsg.error {
+	color: red;
+}
+input#dateField.error {
+	background-color: #FFC0CB;
+}
+
+fieldset {
+	padding-bottom: 1em;
+}
+label { display: inline; }
+#dayMask label { margin-right: 1em; }
+
+#holidays table {
+	font: 80%/1.5 "Lucida Grande", "Lucida Sans Unicode",verdana,lucida,arial,sans-serif;
+	border-collapse: collapse;
+	margin: 1em 0 2em;
+	background: #e3e3e3;
+}
+#holidays th {
+	border: 1px solid #666;
+	color: #fff;
+	background-color: #666;
+	font-weight: normal;
+}
+#holidays td {
+	border: 1px solid #666;
+	padding: 0.5em 1em;
+}
+div.hide { display: none; }
+div.show { display: block; }
+</style>
+</head>
+<body>
+
+<h1>Date input demo</h1>
+
+<p>The following field accepts dates in a variety of formats, including the words "today", "tomorrow" and "yesterday" (or shortenings thereof), variations on "6th October 2003", "next Tuesday" and others.</p>
+
+<p>Note that the default display method for dates is American style (m/d/yyyy).</p>
+
+<p>Further information at Simon Willison's weblog: <a href="http://simon.incutio.com/archive/2003/10/06/betterDateInput">A better way of entering dates</a>.</p>
+<p>I have modified the code to fix a few bugs that I found, added different date formats and added the calendar popup.</p>
+<p>Tanny O'Haley</p>
+
+<form action="#" method="get" onsubmit="return false">
+<div>
+<input type="text" size="10" id="dateField" class="dateparse"> <a href="javascript:void(0);"
+onclick="g_Calendar.show(event, 'dateField')" title="Show popup calendar"><img src="calendar.gif" class="cp_img" alt="Open popup calendar"></a>
+<div id="dateFieldMsg">mm/dd/yyyy</div>
+</div>
+<p><input type="checkbox" checked id="HolidaysClickable" name="HolidaysClickable"><label id="HolidaysClickableLabel" for="HolidaysClickable">Allow holidays to be clicked in popup calendar.</label>
+<input type="button" value="Show Holidays" onclick="showHolidays(this)"></p>
+<fieldset id="dayMask">
+<legend>Calendar Day Mask</legend>
+<p>
+<input type="checkbox" checked id="Sun" name="DayOfWeek" value="0"><label for="Sun">Sun</label>
+<input type="checkbox" checked id="Mon" name="DayOfWeek" value="1"><label for="Mon">Mon</label>
+<input type="checkbox" checked id="Tue" name="DayOfWeek" value="2"><label for="Tue">Tue</label>
+<input type="checkbox" checked id="Wed" name="DayOfWeek" value="3"><label for="Wed">Wed</label>
+<input type="checkbox" checked id="Thu" name="DayOfWeek" value="4"><label for="Thu">Thu</label>
+<input type="checkbox" checked id="Fri" name="DayOfWeek" value="5"><label for="Fri">Fri</label>
+<input type="checkbox" checked id="Sat" name="DayOfWeek" value="6"><label for="Sat">Sat</label>
+</p>
+</fieldset>
+</form>
+
+<p>Try these:</p>
+
+<ul>
+ <li>Today</li>
+ <li>Tod</li>
+ <li>tomorrow</li>
+ <li>tom</li>
+ <li>yesterday</li>
+ <li>6th</li>
+ <li>6th October</li>
+ <li>10th Feb 2004</li>
+ <li>12 feb</li>
+ <li>1 ja</li>
+ <li>last Friday</li>
+ <li>last fri</li>
+ <li>last m</li>
+ <li>this Friday</li>
+ <li>this fri</li>
+ <li>this m</li>
+ <li>next Friday</li>
+ <li>next fri</li>
+ <li>next m</li>
+ <li>first fri</li>
+ <li>second fri</li>
+ <li>third fri</li>
+ <li>fourth fri</li>
+ <li>2004-04-04</li>
+ <li>2004-8-8</li>
+</ul>
+
+<dl>
+<dt>last &lt;day of week&gt;</dt>
+<dd>The closest day previous to yesterday. If today is Wednesday, last Tuesday would not be yesterday but eight days ago. Last Monday would be two days ago.</dd>
+<dt>this &lt;day of week&gt;</dt>
+<dd>The closest day following today. It could be said that this is equal to this coming. If today is Wednesday, this Tuesday would be the six days from today and this Thursday would be tomorrow.</dd>
+<dt>next &lt;day of week&gt;</dt>
+<dd>The day of the week in the week following this week, but not tomorrow. If today is Saturday, next Sunday would not be tomorrow but eight days from today. If today is Wednesday, next Thursday would not be in this week but in next week which would be eight days from today.</dd>
+</dl>
+
+</body>
+</html>

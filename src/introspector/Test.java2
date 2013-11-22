@@ -1,0 +1,77 @@
+package introspector;
+
+import java.beans.BeanDescriptor;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.BeanInfo;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.lang.reflect.TypeVariable;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.commons.el.BeanInfoManager;
+
+import sun.reflect.Reflection;
+import sun.reflect.ReflectionFactory;
+
+public class Test {
+	public static void main(String[] args) throws Exception {
+		Introspector
+				.setBeanInfoSearchPath(new String[] { "steemploi.service" });
+		BeanInfo[] infos = new BeanInfo[] {
+				Introspector.getBeanInfo(steemploi.service.Echeance.class),
+				Introspector.getBeanInfo(steemploi.service.Etudiant.class),
+				Introspector.getBeanInfo(steemploi.service.Formateur.class),
+				Introspector.getBeanInfo(steemploi.service.Utilisateur.class),
+				Introspector
+						.getBeanInfo(steemploi.service.SessionsFormations.class),
+				Introspector.getBeanInfo(steemploi.service.Formation.class),
+				Introspector
+						.getBeanInfo(steemploi.service.CategoriesTache.class),
+				Introspector.getBeanInfo(steemploi.service.Entreprise.class),
+				Introspector.getBeanInfo(steemploi.service.Tache.class),
+				Introspector.getBeanInfo(steemploi.service.Session.class)
+
+		};
+		System.out.println("<html><head></head>");
+		for (BeanInfo infos1 : infos) {
+			MethodDescriptor[] mdescr = infos1.getMethodDescriptors();
+			PropertyDescriptor[] propDescr = infos1.getPropertyDescriptors();
+			System.out.println("<h1>Class"
+					+ infos1.getBeanDescriptor().getName()+"</h1>");
+			for (PropertyDescriptor pdescr : propDescr) {
+				Method get = pdescr.getReadMethod();
+				Method set = pdescr.getWriteMethod();
+				Class propClass = null;
+				if (get != null) {
+					propClass = get.getReturnType();
+
+					if (propClass.equals(Integer.class)) {
+						System.out.println("Integer");
+					} else if (propClass.equals(String.class)) {
+						System.out.println("String");
+
+					} else if (propClass.equals(Calendar.class)) {
+						System.out.println("Calendar");
+					}
+					if (propClass.getSuperclass() != null)
+						System.out.println("Super class:\t"
+								+ propClass.getSuperclass().getName());
+					System.out.println("Property name\t" + pdescr.getName());
+					if (propClass != null)
+						System.out.println("Property type\t"
+								+ propClass.getCanonicalName());
+					if (get != null)
+						System.out.println("Get method\t" + get.getName());
+					if (set != null)
+						System.out.println("\nSet method\t" + set.getName());
+				}
+			}
+		}
+		System.out.println("</body>");
+
+		return;
+	}
+}

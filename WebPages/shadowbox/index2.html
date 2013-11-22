@@ -1,0 +1,45 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="shadowbox.css">
+<style>
+<!--
+#shadowbox_body_inner { background-color: red; } 
+#sb-body-inner{ 
+ background-color: #fff; 
+ color: #000;
+} 
+-->
+</style>
+<script type="text/javascript" src="shadowbox.js"></script>
+<script type="text/javascript">
+Shadowbox.init({
+    // let's skip the automatic setup because we don't have any
+    // properly configured link elements on the page
+    skipSetup: true,
+    // include the html player because we want to display some html content
+    players: ["iframe"]
+});
+
+window.onload = function(){
+
+    // open a welcome message as soon as the window loads
+	Shadowbox.setup("a.shadowbox", {
+        height:     350,
+        width:      350,
+	  gallery: 	"Evenements",
+	  overlayColor: '#888'
+    });
+};
+</script>
+<title>Test shadowbox</title>
+</head>
+
+<body>
+<div id="selection"></div>
+<h1>Test shadowbox</h1>
+<a class="shadowbox" rel="shadowbox" href="test.html" >Evt 1</a>
+<a class="shadowbox" rel="shadowbox" href="test2.html" >Evt 2</a>
+<a class="shadowbox" rel="shadowbox" href="test3.html">Evt 3</a>
+</body>
+</html>
+

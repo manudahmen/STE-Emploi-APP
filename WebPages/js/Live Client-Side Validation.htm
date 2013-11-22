@@ -1,0 +1,660 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0060)http://codylindley.com/blogstuff/js/validation/#errorwarning -->
+<HTML xmlns="http://www.w3.org/1999/xhtml"><HEAD><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<TITLE>Live Client-Side Validation</TITLE>
+<SCRIPT type="text/javascript">
+
+
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+// 
+// Orignal Code by Travis Beckham -  http://www.squidfingers.com
+// Changed / Updated to live validation by Cody Lindley - http://www.codylindley.com
+//
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+// --- version date: 2/9/2006 ---------------------------------------------------------
+
+// returns true if the string is empty
+function isEmpty(str){
+	return (str == null) || (str.length == 0);
+}
+// returns true if the string is a valid email
+function isEmail(str){
+	if(isEmpty(str)) return false;
+	var re = /^[^\s()<>@,;:\/]+@\w[\w\.-]+\.[a-z]{2,}$/i
+	return re.test(str);
+}
+// returns true if the string only contains characters A-Z or a-z
+function isAlpha(str){
+	var re = /[^a-zA-Z]/g
+	if (re.test(str)) return false;
+	return true;
+}
+// returns true if the string only contains characters 0-9
+function isNumeric(str){
+	var re = /[\D]/g
+	if (re.test(str)) return false;
+	return true;
+}
+// returns true if the string only contains characters A-Z, a-z or 0-9
+function isAlphaNumeric(str){
+	var re = /[^a-zA-Z0-9]/g
+	if (re.test(str)) return false;
+	return true;
+}
+// returns true if the string's length equals "len"
+function isLength(str, len){
+	return str.length == len;
+}
+// returns true if the string's length is between "min" and "max"
+function isLengthBetween(str, min, max){
+	return (str.length >= min)&&(str.length <= max);
+}
+// returns true if the string is a US phone number formatted as...
+// (000)000-0000, (000) 000-0000, 000-000-0000, 000.000.0000, 000 000 0000, 0000000000
+function isPhoneNumber(str){
+	var re = /^\(?[2-9]\d{2}[\)\.-]?\s?\d{3}[\s\.-]?\d{4}$/
+	return re.test(str);
+}
+// returns true if the string is a valid date formatted as...
+// mm dd yyyy, mm/dd/yyyy, mm.dd.yyyy, mm-dd-yyyy
+function isDate(str){
+	var re = /^(\d{1,2})[\s\.\/-](\d{1,2})[\s\.\/-](\d{4})$/
+	if (!re.test(str)) return false;
+	var result = str.match(re);
+	var m = parseInt(result[1]);
+	var d = parseInt(result[2]);
+	var y = parseInt(result[3]);
+	if(m < 1 || m > 12 || y < 1900 || y > 2100) return false;
+	if(m == 2){
+		var days = ((y % 4) == 0) ? 29 : 28;
+	}else if(m == 4 || m == 6 || m == 9 || m == 11){
+		var days = 30;
+	}else{
+		var days = 31;
+	}
+	return (d >= 1 && d <= days);
+}
+// returns true if "str1" is the same as the "str2"
+function isMatch(str1, str2){
+	return str1 == str2;
+}
+// returns true if the string contains only whitespace
+// cannot check a password type input for whitespace
+function isWhitespace(str){ // NOT USED IN FORM VALIDATION
+	var re = /[\S]/g
+	if (re.test(str)) return false;
+	return true;
+}
+// removes any whitespace from the string and returns the result
+// the value of "replacement" will be used to replace the whitespace (optional)
+function stripWhitespace(str, replacement){// NOT USED IN FORM VALIDATION
+	if (replacement == null) replacement = '';
+	var result = str;
+	var re = /\s/g
+	if(str.search(re) != -1){
+		result = str.replace(re, replacement);
+	}
+	return result;
+}
+
+// validate form
+function validateForm(f,preCheck,theformfunction){
+	var valid = true;
+	var i,e,t,v,g,b,spantxt,spanid,spanelement,hiddenspan,revalidate,errorwarning;
+	errorwarning = document.getElementById('errorwarning');
+	
+	for(i=0; i < f.elements.length; i++){
+		e = f.elements[i];
+			
+		//add event & functions to form elements based on the formfucntion string
+		if (theformfunction == 'configureValidation1') revalidate = function(){configureValidation1()};
+		if (theformfunction == 'configureValidation2') revalidate = function(){configureValidation2()};
+		if (theformfunction == 'configureValidation3') revalidate = function(){configureValidation3()};
+		if (e.type == 'text' || e.type == 'password' || e.type == 'textarea'){e.onkeyup = revalidate};
+		if (e.nodeName.toLowerCase() == "select"){e.onchange = revalidate};
+		if (e.type == 'radio' || e.type == 'checkbox'){e.onclick = revalidate};
+
+		
+		if(e.optional) continue;
+		
+		t = e.type;
+		v = e.value;
+		
+		g = e.id + "L";
+		if(document.getElementById(g)) b = document.getElementById(g);
+		
+		spanid = e.id + "m";
+		spanelement = document.createElement('span');
+		spanelement.id = spanid;
+		spanelement.className = "errortxt"
+		if (!document.getElementById(spanid)) e.parentNode.appendChild(spanelement);
+		hiddenspan = document.getElementById(spanid);
+		
+		if(t == 'text' || t == 'password' || t == 'textarea'){
+			if(isEmpty(v)){
+				valid = false;
+				b.className = "errorLabel";
+				hiddenspan.style.display = 'block';
+				hiddenspan.innerHTML = 'Required Information';
+				continue;
+			}else{
+				hiddenspan.style.display = 'none';
+				hiddenspan.innerHTML = '';
+				b.className = "fixedLabel"
+			}
+			
+			if(v == e.defaultValue){
+				valid = false;
+				hiddenspan.style.display = 'block';
+				hiddenspan.innerHTML = 'Replace Default Text';
+				b.className = "errorLabel";
+				continue;
+			}else{
+				hiddenspan.style.display = 'none';
+				hiddenspan.innerHTML = '';
+				b.className = "fixedLabel"
+			}
+			
+			if(e.isAlpha){
+				if(!isAlpha(v)){
+					valid = false;
+					b.className = "errorLabel";
+					hiddenspan.style.display = 'block';
+					hiddenspan.innerHTML = 'Only Letters Allowed';
+					continue;
+				}else{
+					hiddenspan.style.display = 'none';
+					hiddenspan.innerHTML = '';
+					b.className = "fixedLabel"
+				}
+			}
+			
+			if(e.isNumeric){
+				if(!isNumeric(v)){
+					valid = false;
+					b.className = "errorLabel";
+					hiddenspan.style.display = 'block';
+					hiddenspan.innerHTML = 'Only Numbers Allowed';
+					continue;
+				}else{
+					hiddenspan.style.display = 'none';
+					hiddenspan.innerHTML = '';
+					b.className = "fixedLabel"
+				}
+			}
+			
+			if(e.isAlphaNumeric){
+				if(!isAlphaNumeric(v)){
+					valid = false;
+					b.className = "errorLabel";
+					hiddenspan.style.display = 'block';
+					hiddenspan.innerHTML = 'Only Letters & Numbers Allowed';
+					continue;
+				}else{
+					hiddenspan.style.display = 'none';
+					hiddenspan.innerHTML = '';
+					b.className = "fixedLabel"
+				}
+			}
+			
+			if(e.isEmail){
+				if(!isEmail(v)){
+					valid = false;
+					b.className = "errorLabel";
+					hiddenspan.style.display = 'block';
+					hiddenspan.innerHTML = 'Invalid Email Format';
+					continue;
+				}else{
+					hiddenspan.style.display = 'none';
+					hiddenspan.innerHTML = '';
+					b.className = "fixedLabel"
+				}
+			}
+			
+			if(e.isLength != null){
+				var len = e.isLength;
+				if(!isLength(v,len)){
+					valid = false;
+					b.className = "errorLabel";
+					hiddenspan.style.display = 'block';
+					hiddenspan.innerHTML = 'Invalid Amount Characters';
+					continue;
+				}else{
+					hiddenspan.style.display = 'none';
+					hiddenspan.innerHTML = '';
+					b.className = "fixedLabel"
+				}
+			}
+			
+			if(e.isLengthBetween != null){
+				var min = e.isLengthBetween[0];
+				var max = e.isLengthBetween[1];
+				if(!isLengthBetween(v,min,max)){
+					valid = false;
+					b.className = "errorLabel";
+					hiddenspan.style.display = 'block';
+					hiddenspan.innerHTML = 'Invalid Amount Characters';
+					continue;
+				}else{
+					hiddenspan.style.display = 'none';
+					hiddenspan.innerHTML = '';
+					b.className = "fixedLabel"
+				}
+			}
+			
+			if(e.isPhoneNumber){
+				if(!isPhoneNumber(v)){
+				 	valid = false;
+					b.className = "errorLabel";
+					hiddenspan.style.display = 'block';
+					hiddenspan.innerHTML = 'Invalid Phone Format';
+					continue;
+				}else{
+					hiddenspan.style.display = 'none';
+					hiddenspan.innerHTML = '';
+					b.className = "fixedLabel"
+				}
+			}
+			
+			if(e.isDate){
+				if(!isDate(v)){
+					valid = false;
+					b.className = "errorLabel";
+					hiddenspan.style.display = 'block';
+					hiddenspan.innerHTML = 'Invalid Date Format';
+					continue;
+				}else{
+					hiddenspan.style.display = 'none';
+					hiddenspan.innerHTML = '';
+					b.className = "fixedLabel"
+				}
+			}
+			
+			if(e.isMatch != null){
+				if(!isMatch(v, e.isMatch)){
+					valid = false;
+					b.className = "errorLabel";
+					hiddenspan.style.display = 'block';
+					hiddenspan.innerHTML = 'Entered Values Do Not Match';
+					continue;
+				}else{
+					hiddenspan.style.display = 'none';
+					hiddenspan.innerHTML = '';
+					b.className = "fixedLabel"
+				}
+			}
+		}
+		
+		if(t.indexOf('select') != -1){
+			if(e.options[e.selectedIndex].value == 'noselection'){
+				valid = false;
+				b.className = "errorLabel";
+				hiddenspan.style.display = 'block';
+				hiddenspan.innerHTML = 'Required Information';
+				continue;
+			}else{
+				hiddenspan.style.display = 'none';
+				hiddenspan.innerHTML = '';
+				b.className = "fixedLabel"
+			}
+		}
+		
+		if(t == 'file'){
+			if(isEmpty(v)){
+				valid = false;
+				b.className = "errorLabel";
+				hiddenspan.style.display = 'block';
+				hiddenspan.innerHTML = 'Required Information';
+				continue;
+			}else{
+				hiddenspan.style.display = 'none';
+				hiddenspan.innerHTML = '';
+				b.className = "fixedLabel"
+			}
+		}
+		
+		
+	}
+	if(preCheck == false){valid = false};
+	if(preCheck == false || valid == false){
+			errorwarning.style.display = 'block';
+			(window.location.hash == '#errorwarning') ? null : window.location.hash = 'errorwarning';
+		}else{
+			errorwarning.style.display = 'none'
+		};
+	return valid;
+}
+
+
+// ||||||||||||||||||||||||||||||||||||||||||||||||||
+// Instructions for Configuration
+// ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+/*
+All elements are assumed required and will only be validated for an
+empty value or defaultValue unless specified by the following properties.
+
+isEmail = true;          // valid email address
+isAlpha = true;          // A-Z a-z characters only
+isNumeric = true;        // 0-9 characters only
+isAlphaNumeric = true;   // A-Z a-z 0-9 characters only
+isLength = number;       // must be exact length
+isLengthBetween = array; // [lowNumber, highNumber] must be between lowNumber and highNumber
+isPhoneNumber = true;    // valid US phone number. See "isPhoneNumber()" comments for the formatting rules
+isDate = true;           // valid date. See "isDate()" comments for the formatting rules
+isMatch = string;        // must match string
+optional = true;         // element will not be validated
+*/
+
+// ||||||||||||||||||||||||||||||||||||||||||||||||||
+// --------------------------------------------------
+// ||||||||||||||||||||||||||||||||||||||||||||||||||
+
+// configures form[0] or the first form in the document
+function configureValidation1(){
+    f = null;
+	f = document.forms[0]; //the form must be set here
+	f.firstname.isAlphaNumeric = true;
+	f.lastname.isAlphaNumeric = true;
+	f.age.isNumeric = true;
+	f.ssnumber.isLength = [4];
+	f.email.isEmail = true;
+	f.phone.isPhoneNumber = true;
+	f.birthday.isDate = true;
+	f.password1.isLengthBetween = [4,255];
+	f.password2.isMatch = f.password1.value;
+	f.request.isAlphaNumeric = true;
+	f.comments.optional = true;
+	
+	//deal with radio and check buttons must be set according to page specifics
+	var preCheck = true;
+	if(!f.checkbox0[0].checked && !f.checkbox0[1].checked && !f.checkbox0[2].checked){
+	document.getElementById('checkbox0Lm').style.display = 'block';
+	document.getElementById('checkbox0L').className = 'errorLabel';
+	document.getElementById('checkbox0Lm').innerHTML = 'Required Selection';
+	preCheck = false;
+	}else{
+	document.getElementById('checkbox0Lm').style.display = 'none';
+	document.getElementById('checkbox0L').className = 'fixedLabel';
+	document.getElementById('checkbox0Lm').innerHTML = '';
+	};
+	
+	if(!f.gender[0].checked && !f.gender[1].checked){
+	document.getElementById('genderLm').style.display = 'block';
+	document.getElementById('genderL').className = 'errorLabel';
+	document.getElementById('genderLm').innerHTML = 'Required Selection';
+	preCheck = false;
+	}else{
+	document.getElementById('genderLm').style.display = 'none';
+	document.getElementById('genderL').className = 'fixedLabel';
+	document.getElementById('genderLm').innerHTML = '';
+	};
+	
+	return validateForm(f,preCheck,'configureValidation1');
+}
+
+function configureValidation2(){
+	f = null;
+	f = document.forms[1]; //the form
+	f.dogsname.isAlpha = true;
+	f.catsname.isAlpha = true;
+	precheck = true //no radio or checkbox in form
+
+	return validateForm(f,precheck,'configureValidation2');
+}
+
+</SCRIPT>
+<STYLE type="text/css" media="screen">
+
+/* ----- Uncomment the global selector below to over-ride the default margin and padding added to all tags  ----- */
+
+*{padding: 0; margin: 0;}
+
+/* ----- global default/initial styles ----- */
+body {background-color:#fff; margin:30px 20px 20px 20px; padding: 0;height:100%}
+
+/* ----- base default font size, type, and line height ----- */
+html body{font: 62.5%/1.4em Arial, Helvetica, sans-serif;color:#333333;}
+html>body{font: 62.5%/1.4em Arial, Helvetica, sans-serif;color:#333333;}
+html {height:100%}
+
+/* ----- add selectors here for font sizing ----- */
+.requiredcontainer{font-size: 0.9em}
+p, table, #errorwarning {font-size: 1.2em}
+code {font-size: 1.4em}
+h2 {font-size: 1.6em}
+
+h2 {
+	color: #cfcfcf;
+	font-weight: bold;
+	text-transform: capitalize;
+	padding-bottom:5px;
+	float:left;
+	width:120px;
+}
+
+table.formtable tr td{
+	padding:4px;
+}
+
+table.formtable{
+	float: left;
+		margin:10px 30px 0 0;
+	border-right: 1px solid #e8e8e8;
+	padding-right:30px;
+}
+
+/* ----- base links ----- */
+a:link {color: #CC6633;}
+a:visited {color: #CC6633;}
+a:hover {color: #999966;}
+a:active {color: #CC6633;}
+a:focus{color: #CC6633;}
+
+.errorLabel {
+	background-image: url(error-graphic.gif);
+	background-repeat: no-repeat;
+	background-position: left center;
+	padding-left: 16px;
+}
+
+.fixedLabel{
+	background-image: url(astrick.gif);
+	background-repeat: no-repeat;
+	background-position: left top;
+	padding-left: 6px;
+}
+
+label{font-weight:bold;color:#592C16}
+
+.required{
+	color:#FF0000;
+}
+
+.errortxt{
+	color: #FF0000;
+	display:none;
+}
+
+#errorwarning{
+	color: #FFFFFF;
+	padding: 6px 15px;
+	background-color: #FF0000;
+	border-left: 15px solid #990000;
+	margin:5px 0;
+	display:none;
+}
+
+.requiredcontainer{
+color:#999999;
+text-align:right;
+float:right;
+width:75px;
+}
+
+</STYLE>
+</HEAD><BODY>
+<DIV id="container">
+<P><A href="http://codylindley.com/Javascript/243/live-javascript-validation">What is this?</A></P>
+  <DIV id="errorwarning" style="display: block; "><STRONG>Form Errors!</STRONG> Please fix the error's indicated in red below.</DIV>
+  <FORM action="http://codylindley.com/blogstuff/js/validation/nothing.php" method="post" onsubmit="return configureValidation1();" id="form1" onreset="confirm(&#39;All form information will be erased.&#39;)">
+    <TABLE class="formtable">
+      <TBODY>
+        <TR>
+          <TD colspan="2"><H2>Form #1 </H2><DIV class="requiredcontainer">(<SPAN class="required">*</SPAN>required) </DIV><HR size="1" noshade="noshade" color="#e8e8e8" style="clear:both; display:block"></TD>
+        </TR>
+        <TR>
+          <TD valign="baseline"><LABEL for="firstname" id="firstnameL" class="errorLabel"><SPAN class="required"></SPAN>First Name:</LABEL>
+          </TD>
+          <TD><INPUT id="firstname" value="" type="text" onkeydown="return blockEnter(event)"><SPAN id="firstnamem" class="errortxt" style="display: block; ">Required Information</SPAN></TD>
+        </TR>
+        <TR>
+          <TD valign="baseline"><LABEL for="lastname" id="lastnameL" class="errorLabel"><SPAN class="required"></SPAN>Last Name:</LABEL>
+          </TD>
+          <TD><INPUT id="lastname" value="" type="text" onkeydown="return blockEnter(event)"><SPAN id="lastnamem" class="errortxt" style="display: block; ">Required Information</SPAN></TD>
+        </TR>
+        <TR>
+          <TD valign="baseline"><LABEL for="age" id="ageL" class="errorLabel"><SPAN class="required"></SPAN>Age:</LABEL>
+          </TD>
+          <TD><INPUT id="age" value="" type="text" onkeydown="return blockEnter(event)"><SPAN id="agem" class="errortxt" style="display: block; ">Required Information</SPAN></TD>
+        </TR>
+        <TR>
+          <TD valign="baseline"><LABEL for="ssnumber" id="ssnumberL" class="errorLabel"><SPAN class="required"></SPAN>Social Security # (last four digits):</LABEL>
+          </TD>
+          <TD><INPUT id="ssnumber" value="0000" type="text" onkeydown="return blockEnter(event)"><SPAN id="ssnumberm" class="errortxt" style="display: block; ">Replace Default Text</SPAN></TD>
+        </TR>
+        <TR>
+          <TD valign="baseline"><LABEL for="email" id="emailL" class="errorLabel"><SPAN class="required"></SPAN>Email:</LABEL>
+          </TD>
+          <TD><INPUT id="email" value="" type="text" onkeydown="return blockEnter(event)"><SPAN id="emailm" class="errortxt" style="display: block; ">Required Information</SPAN></TD>
+        </TR>
+        <TR>
+          <TD valign="baseline"><LABEL for="emailpreferred" id="emailpreferredL" class="errorLabel"><SPAN class="required"></SPAN>Email Preferred:</LABEL>
+          </TD>
+          <TD><SELECT id="emailpreferred" name="emailpreferred">
+              <OPTION value="noselection" selected="selected">Please make a choice</OPTION>
+              <OPTION value="text">Text</OPTION>
+              <OPTION value="html">HTML</OPTION>
+              <OPTION value="flash">Flash</OPTION>
+            </SELECT><SPAN id="emailpreferredm" class="errortxt" style="display: block; ">Required Information</SPAN></TD>
+			
+        </TR>
+        <TR>
+		</TR><TR>
+          <TD valign="baseline"><LABEL for="emailpreferred2" id="emailpreferred2L" class="errorLabel"><SPAN class="required"></SPAN>2nd Email Preferred:</LABEL>
+          </TD>
+          <TD><SELECT id="emailpreferred2" name="emailpreferred2">
+              <OPTION value="noselection" selected="selected">Please make a choice</OPTION>
+              <OPTION value="text">Text</OPTION>
+              <OPTION value="html">HTML</OPTION>
+              <OPTION value="flash">Flash</OPTION>
+            </SELECT><SPAN id="emailpreferred2m" class="errortxt" style="display: block; ">Required Information</SPAN></TD>
+			
+        </TR>
+        <TR>
+          <TD valign="baseline"><LABEL for="phone" id="phoneL" class="errorLabel"><SPAN class="required"></SPAN>Phone: (US only)</LABEL>
+          </TD>
+          <TD><INPUT id="phone" value="(000) 000-0000" type="text" onkeydown="return blockEnter(event)"><SPAN id="phonem" class="errortxt" style="display: block; ">Replace Default Text</SPAN></TD>
+        </TR>
+        <TR>
+          <TD valign="baseline"><LABEL for="birthday" id="birthdayL" class="errorLabel"><SPAN class="required"></SPAN>Birthday:</LABEL>
+          </TD>
+          <TD><INPUT id="birthday" value="mm/dd/yyyy" type="text" onkeydown="return blockEnter(event)"><SPAN id="birthdaym" class="errortxt" style="display: block; ">Invalid Date Format</SPAN></TD>
+        </TR>
+        <TR>
+          <TD valign="baseline"><LABEL id="genderL" class="fixedLabel">Gender:</LABEL></TD>
+          <TD>Male:
+            <INPUT name="gender" value="male" class="radio" id="gender_male" type="radio" onkeydown="return blockEnter(event)">
+            Female:
+            <INPUT name="gender" value="female" class="radio" id="gender_female" type="radio" onkeydown="return blockEnter(event)">
+            <SPAN class="errortxt" id="genderLm" style="display: none; "></SPAN><SPAN id="gender_malem" class="errortxt"></SPAN><SPAN id="gender_femalem" class="errortxt"></SPAN></TD>
+        </TR>
+        <TR>
+          <TD valign="baseline"><LABEL for="password1" id="password1L" class="fixedLabel"><SPAN class="required"></SPAN>Password1:</LABEL>
+          </TD>
+          <TD><INPUT id="password1" value="" type="password" onkeydown="return blockEnter(event)"><SPAN id="password1m" class="errortxt" style="display: none; "></SPAN></TD>
+        </TR>
+        <TR>
+          <TD valign="baseline"><LABEL for="password2" id="password2L" class="fixedLabel"><SPAN class="required"></SPAN>Password2:</LABEL>
+          </TD>
+          <TD><INPUT id="password2" value="" type="password" onkeydown="return blockEnter(event)"><SPAN id="password2m" class="errortxt" style="display: none; "></SPAN></TD>
+        </TR>
+        <TR>
+          <TD colspan="2"><LABEL id="checkbox0L" class="fixedLabel"><SPAN class="required"></SPAN>Select one or more of the following:</LABEL></TD>
+        </TR>
+        <TR>
+          <TD colspan="2">HTML:
+            <INPUT value="true" name="checkbox0" class="checkbox" type="checkbox" onkeydown="return blockEnter(event)">
+            CSS:
+            <INPUT value="true" name="checkbox0" class="checkbox" type="checkbox" onkeydown="return blockEnter(event)">
+            JavaScript:
+            <INPUT value="true" name="checkbox0" class="checkbox" type="checkbox" onkeydown="return blockEnter(event)">
+            <SPAN class="errortxt" id="checkbox0Lm" style="display: none; "></SPAN><SPAN id="m" class="errortxt"></SPAN></TD>
+        </TR>
+        <TR>
+          <TD colspan="2"><LABEL for="request" id="requestL" class="errorLabel"><SPAN class="required"></SPAN>Request:</LABEL></TD>
+        </TR>
+        <TR>
+          <TD colspan="2"><TEXTAREA id="request" name="request" cols="40" rows="2" onkeydown="return blockEnter(event)"></TEXTAREA>
+          <SPAN id="requestm" class="errortxt" style="display: block; ">Required Information</SPAN></TD>
+        </TR>
+        <TR>
+          <TD colspan="2"><LABEL for="comments" id="commentsL">Comments:</LABEL></TD>
+        </TR>
+        <TR>
+          <TD colspan="2"><TEXTAREA id="comments" name="comments" cols="40" rows="2" onkeydown="return blockEnter(event)"></TEXTAREA>
+          </TD>
+        </TR>
+        <TR>
+          <TD colspan="2"><HR size="1" noshade="noshade" color="#e8e8e8"></TD>
+        </TR>
+        <TR align="right">
+          <TD colspan="2"><INPUT name="submit" value="Submit" class="button" type="submit">
+            <INPUT name="reset" value="Reset" class="button" type="reset" onmouseup="window.location.reload();"></TD>
+        </TR>
+      </TBODY>
+    </TABLE>
+  </FORM>
+  <FORM action="http://codylindley.com/blogstuff/js/validation/nothing.php" method="post" onsubmit="return configureValidation2();" id="form2" onreset="confirm(&#39;All form information will be erased.&#39;)">
+    <TABLE class="formtable">
+      <TBODY><TR>
+        <TD colspan="2" class="formtable"><H2>Form #2</H2><DIV class="requiredcontainer">(<SPAN class="required">*</SPAN>required) </DIV><HR size="1" noshade="noshade" color="#e8e8e8" style="clear:both; display:block"></TD>
+      </TR>
+      <TR>
+        <TD valign="baseline" class="formtable"><LABEL for="catsname" id="catsnameL" class="fixedLabel">Cats Name:</LABEL></TD>
+        <TD><INPUT type="text" id="catsname" name="textfield" onkeydown="return blockEnter(event)">
+        </TD>
+      </TR>
+      <TR>
+        <TD valign="baseline" class="formtable"><LABEL for="dogsname" id="dogsnameL" class="fixedLabel">Dogs Name:</LABEL></TD>
+        <TD><INPUT type="text" id="dogsname" name="textfield" onkeydown="return blockEnter(event)">
+        </TD>
+      </TR>
+      <TR>
+        <TD colspan="2"><HR size="1" noshade="noshade" color="#e8e8e8"></TD>
+      </TR>
+      <TR align="right">
+        <TD colspan="2"><INPUT name="submit" value="Submit" class="button" type="submit">
+          <INPUT name="reset" value="Reset" class="button" type="reset" onmouseup="window.location.reload();"></TD>
+      </TR>
+    </TBODY></TABLE>
+  </FORM>
+</DIV>
+<SCRIPT language="JavaScript" type="text/JavaScript">
+
+//stop form submisson when enter key is used. Should be added to onload event handler
+function blockEnter(evt) {
+    evt = (evt) ? evt : event;
+    var charCode = (evt.charCode) ? evt.charCode :
+        ((evt.which) ? evt.which : evt.keyCode);
+    if (charCode == 13) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+</SCRIPT>
+
+
+</BODY></HTML>

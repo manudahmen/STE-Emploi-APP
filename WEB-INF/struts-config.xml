@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+          "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
+
+
+<struts-config>
+    <form-beans >
+        <form-bean  type="steemploi.service.Contact" name="contact" />
+        <form-bean  type="steemploi.service.Entreprise" name="EntrepriseForm" />
+        <form-bean  type="steemploi.service.Entreprise" name="EntrepriseDForm" />
+        <form-bean  type="steemploi.service.Tache" name="tache" />
+        <form-bean  type="steemploi.service.Tache" name="supprimerTache" />
+        <form-bean  type="steemploi.service.Tache" name="tache" />
+        <form-bean  type="steemploi.service.Echeance" name="editeEcheance" />
+        <form-bean  type="steemploi.service.Echeance" name="deleteEcheance" />
+        <form-bean  type="steemploi.service.Login" name="login" >
+	        <form-property name="username" type="java.lang.string"></form-property>
+	        <form-property name="password" type="java.lang.string"></form-property>
+        </form-bean>
+        <form-bean  type="steemploi.service.Formation" name="formation" />
+        <form-bean  type="com.myapp.struts.events.JPO" name="jpo" />
+        <form-bean  type="com.myapp.struts.events.Evt" name="evt" />
+        <form-bean  type="com.myapp.struts.events.Conge" name="conge" />
+        <form-bean  type="com.myapp.struts.events.PEntreprise" name="pentreprise" />
+        <form-bean  type="steemploi.service.Candidature" name="ecandidature" />
+        <form-bean  type="steemploi.service.Candidature" name="dcandidature" />
+		<form-bean  type="steemploi.service.Utilisateur" name="user1"/>
+		<form-bean  type="steemploi.service.Profil" name="profil1"/>
+		<form-bean  type="steemploi.service.Profil" name="profil2"/>
+		<form-bean  type="steemploi.service.Profil" name="profil3"/>
+		<form-bean  type="steemploi.service.Profil" name="profil4"/>
+		<form-bean  type="steemploi.service.Profil" name="profil5"/>
+		<form-bean  type="steemploi.service.Profil" name="profil6"/>
+		<form-bean  type="steemploi.service.Profil" name="profil7"/>
+		<form-bean  type="steemploi.service.Profil" name="profil8"/>
+		<form-bean  type="steemploi.service.Profil" name="profil9"/>
+
+<form-bean  type="steemploi.service.Utilisateur" name="user2"/>
+<form-bean  type="steemploi.service.Utilisateur" name="utilisateur3"/>
+<form-bean  type="steemploi.service.SessionsFormations" name="sessionformation"/>
+<form-bean  type="steemploi.service.Formation" name="formation"/>
+
+<form-bean  type="steemploi.service.CategoriesTache" name="categoriestache"/>
+<form-bean  type="steemploi.service.Profil" name="profil">
+</form-bean>
+
+<form-bean  type="steemploi.service.Utilisateur" name="editUtilisateur"/>
+<form-bean  type="steemploi.service.SessionFormation" name="editSessionFormation"/>
+<form-bean  type="steemploi.service.Formation" name="editFormation"/>
+
+<form-bean  type="steemploi.service.CV" name="cv"/>
+</form-beans>
+    
+    <global-exceptions>
+    
+    </global-exceptions>
+
+    <global-forwards>
+        <forward name="welcome"  path="/Welcome.do"/>
+    </global-forwards>
+
+    <action-mappings >
+        <action path="/Welcome" forward="/login.jsp"></action>
+        <action path="/Login" type="com.myapp.struts.Login" name="login"  validate="true" input="/login.jsp">
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="invalid" path="/invalid.jsp" redirect="false"/>
+            <forward name="error" path="/login.jsp" redirect="false"/>
+            <forward name="adminpage" path="/admin/usersmanager.jsp" redirect="true"/>
+        </action>
+        <action path="/EditTaskForm" type="com.myapp.struts.EditTaskForm" name="editerTache">
+            <forward name="success" path="/success.jsp"/>
+        </action>
+        <action path="/Entreprise" type="com.myapp.struts.EditEntreprise" name="EntrepriseForm" input="/index_agenda.jsp">
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/success.jsp" redirect="false"/>
+        </action>
+		<action path="/EditContact" type="com.myapp.struts.EditContact" name="contact">
+			<forward name="success" path="/success.jsp" redirect="false"/>
+			<forward name="error" path="/error.jsp" redirect="false"/>
+		</action>
+        <action path="/DeleteEntreprise" type="com.myapp.struts.DeleteEntreprise" name="EntrepriseDForm">
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/success.jsp" redirect="false"/>
+            <forward name="invalidate" path="/invalidate.jsp" redirect="false"/>
+        </action>
+        <action path="/Task" type="com.myapp.struts.EditTask" name="tache"  validate="true">
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/error.jsp"  redirect="false"/>
+        </action>
+        <action path="/DeleteTask" type="com.myapp.struts.DeleteTask" name="supprimerTache" >
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/error.jsp" redirect="false"/>
+        </action>
+        <action path="/EditEcheance" type="com.myapp.struts.EditEcheance" name="editeEcheance" input="/index_agenda.jsp">
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/error.jsp" redirect="false"/>
+        </action>
+        <action path="/DeleteEcheance" type="com.myapp.struts.DeleteEcheance" name="deleteEcheance" >
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/error.jsp" redirect="false"/>
+        </action>
+		<action path="/EditFormation" type="com.myapp.struts.EditFormation" name="formation">
+			<forward name="success" path="/success.jsp" redirect="false"/>
+			<forward name="error" path="/error.jsp" redirect="false"/>
+		</action>
+		<action path="/EditJPO" type="com.myapp.struts.events.EditJPO" name="jpo">
+			<forward name="success" path="/success.jsp" redirect="false"/>
+			<forward name="error" path="/error.jsp" redirect="false"/>
+		</action>
+		<action path="/EditEvt" type="com.myapp.struts.events.EditEvt" name="evt">
+			<forward name="success" path="/success.jsp" redirect="false"/>
+			<forward name="error" path="/error.jsp" redirect="false"/>
+		</action>
+		<action path="/EditConge" type="com.myapp.struts.events.EditConge" name="conge">
+			<forward name="success" path="/success.jsp" redirect="false"/>
+			<forward name="error" path="/error.jsp" redirect="false"/>
+		</action>
+		<action path="/EditPEntreprise" type="com.myapp.struts.events.EditPEntreprise" name="pentreprise">
+			<forward name="success" path="/success.jsp" redirect="false"/>
+			<forward name="error" path="/error.jsp" redirect="false"/>
+		</action>
+	<action path="/EditUtilisateur" type="com.myapp.struts.EditUtilisateur" name="user1">
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+
+	<action path="/EditProfilStep1" type="com.myapp.struts.EditProfilStep1" name="profil1">
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+	<action path="/EditProfilStep2" type="com.myapp.struts.EditProfilStep2" name="profil2">
+		<forward name="success" path="/index_agenda.jsp?page=profil&amp;step=2" redirect="true"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+	<action path="/EditProfilStep3" type="com.myapp.struts.EditProfilStep3" name="profil3">
+		<forward name="success" path="/index_agenda.jsp?page=profil&amp;step=3" redirect="true"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+	<action path="/EditProfilStep4" type="com.myapp.struts.EditProfilStep4" name="profil4">
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+	<action path="/EditProfilStep5" type="com.myapp.struts.EditProfilStep5" name="profil5">
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+	<action path="/EditProfilStep6" type="com.myapp.struts.EditProfilStep6" name="profil6">
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+	<action path="/EditProfilStep7" type="com.myapp.struts.EditProfilStep7" name="profil7">
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+	<action path="/EditProfilStep8" type="com.myapp.struts.EditProfilStep8" name="profil8">
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>	
+	<action path="/EditProfilStep9" type="com.myapp.struts.EditProfilStep9" name="profil9">
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+
+
+
+
+
+
+
+
+
+
+	<action path="/admin/EditUtilisateur2" type="com.myapp.struts.admin.EditUtilisateur" name="utilisateur2" >
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+	<action path="/admin/EditUtilisateur3" type="com.myapp.struts.admin.EditUtilisateur3" name="utilisateur3" >
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+	<action path="/admin/EditSessionsFormations" type="com.myapp.struts.admin.EditSessionFormation" name="sessionformation" >
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+	<action path="/admin/EditFormation" type="com.myapp.struts.admin.EditFormation" name="formation" >
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+
+
+
+
+	<action path="/EditCategoriesTache" type="com.myapp.struts.EditCategoriesTache" name="categoriestache" >
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+
+	<action path="/DeleteCategoriesTache" type="com.myapp.struts.DeleteCategoriesTache" name="categoriestache" >
+		<forward name="success" path="/success.jsp" redirect="false"/>
+		<forward name="error" path="/error.jsp" redirect="false"/>
+	</action>
+
+
+
+
+
+        <action path="/EditCandidature" type="com.myapp.struts.EditCandidature" name="ecandidature">
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/error.jsp" redirect="false"/>
+        </action>
+        <action path="/DeleteCandidature" type="com.myapp.struts.DeleteCandidature" name="dcandidature" >
+            <forward name="success" path="/index_agenda.jsp?page=candidatures" redirect="true"/>
+            <forward name="error" path="/error.jsp" redirect="false"/>
+        </action>
+
+
+
+
+        <action path="/admin/EditUtilisateur" type="com.myapp.struts.admin.EditUtilisateur" name="user2" input="/admin/usersmanager.jsp">
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/error.jsp" redirect="false"/>
+        </action>
+        <action path="/admin/EditSessionFormation" type="com.myapp.struts.admin.EditSessionFormation" name="sessionformation" input="/admin/usersmanager.jsp">
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/error.jsp" redirect="false"/>
+        </action>
+        <action path="/admin/EditFormation" type="com.myapp.struts.admin.EditFormation" name="formation" input="/admin/usersmanager.jsp">
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/error.jsp" redirect="false"/>
+        </action>
+
+
+
+        <action path="/PostCV" type="com.myapp.struts.PostCV" name="cv">
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/error.jsp" redirect="false"/>
+        </action>
+        <action path="/DeleteCV" type="com.myapp.struts.DeleteCV" name="cv">
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/error.jsp" redirect="false"/>
+        </action>
+
+  
+        <action path="/SaveCatInfo" type="com.myapp.struts.editerprofils.SaveCatInfo">
+            <forward name="success" path="/success.jsp" redirect="false"/>
+            <forward name="error" path="/error.jsp" redirect="false"/>
+        </action>
+
+
+
+
+        </action-mappings>
+
+   
+    <controller processorClass="org.apache.struts.tiles.TilesRequestProcessor" contentType="text/html; charset=UTF-8" maxFileSize="2M"/>
+
+    <message-resources parameter="com/myapp/struts/ApplicationResource"/>
+    
+    <!-- ========================= Tiles plugin ===============================-->
+    <!--
+    This plugin initialize Tiles definition factory. This later can takes some
+    parameters explained here after. The plugin first read parameters from
+    web.xml, thenoverload them with parameters defined here. All parameters
+    are optional.
+    The plugin should be declared in each struts-config file.
+    - definitions-config: (optional)
+    Specify configuration file names. There can be several comma
+    separated file names (default: ?? )
+    - moduleAware: (optional - struts1.1)
+    Specify if the Tiles definition factory is module aware. If true
+    (default), there will be one factory for each Struts module.
+    If false, there will be one common factory for all module. In this
+    later case, it is still needed to declare one plugin per module.
+    The factory will be initialized with parameters found in the first
+    initialized plugin (generally the one associated with the default
+    module).
+    true : One factory per module. (default)
+    false : one single shared factory for all modules
+    - definitions-parser-validate: (optional)
+    Specify if xml parser should validate the Tiles configuration file.
+    true : validate. DTD should be specified in file header (default)
+    false : no validation
+
+    Paths found in Tiles definitions are relative to the main context.
+    -->
+    <plug-in className="org.apache.struts.tiles.TilesPlugin" >
+        <set-property property="definitions-config" value="/WEB-INF/tiles-defs.xml" />
+        <set-property property="moduleAware" value="true" />
+    </plug-in>
+    
+    <!-- ========================= Validator plugin ================================= -->
+    <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+        <set-property
+            property="pathnames"
+            value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml"/>
+    </plug-in>
+</struts-config>

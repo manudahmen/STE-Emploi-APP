@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<project name="Precompilation" default="jspc"> 
+
+  <target name="jspc"> 
+
+    <taskdef classname="org.apache.jasper.JspC" name="jasper2" > 
+      <classpath id="jspc.classpath"> 
+        <pathelement location="${java.home}\..\lib\tools.jar"/> 
+        <fileset dir="${tomcat.home}\bin"> 
+          <include name="*.jar"/> 
+        </fileset> 
+        <fileset dir="${tomcat.home}\server\lib"> 
+          <include name="*.jar"/> 
+        </fileset> 
+        <fileset dir="${tomcat.home}\common\lib"> 
+          <include name="*.jar"/> 
+        </fileset> 
+      </classpath> 
+    </taskdef> 
+
+    <jasper2 
+             validateXml="false" 
+             uriroot="${webapp.home}" 
+             webXmlFragment="${webapp.path}\WEB-INF\generated_web.xml" 
+             outputDir="${output.home}"
+			classpath="${jspc.classpath}">
+	</jasper2>
+
+  </target> 
+</project>
